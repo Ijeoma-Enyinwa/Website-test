@@ -94,180 +94,61 @@ body {
     transform: scale(1.1);
 }
 
-/* Envelope Container */
-.envelope-container {
+/* Intro Video Overlay */
+.intro-video-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100vh;
-    background: linear-gradient(135deg, var(--tan), var(--burnt-orange));
+    background: #000;
+    z-index: 3000;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
     transition: opacity 1s ease, transform 1s ease;
 }
 
-.envelope-container.hidden {
+.intro-video-overlay.hidden {
     opacity: 0;
     transform: translateY(-100vh);
     pointer-events: none;
 }
 
-.envelope {
-    position: relative;
-    width: 400px;
-    height: 300px;
-    perspective: 1000px;
-}
-
-.envelope-body {
-    position: absolute;
+.intro-video-overlay video {
     width: 100%;
     height: 100%;
-    background: var(--brown);
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    object-fit: cover;
 }
 
-.envelope-flap {
+.tap-hint {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 150px;
-    background: var(--brown-dark);
-    clip-path: polygon(0 0, 50% 100%, 100% 0);
-    transform-origin: top;
-    transition: transform 0.8s ease;
-    z-index: 10;
-}
-
-.envelope.open .envelope-flap {
-    transform: rotateX(180deg);
-}
-
-.invitation-card {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-    background: var(--cream);
-    border-radius: 8px;
-    padding: 30px;
-    text-align: center;
-    transition: transform 0.8s ease 0.4s;
-    z-index: 5;
-}
-
-.envelope.open .invitation-card {
-    transform: translateY(-150px);
-}
-
-.card-content {
-    opacity: 0;
-    transition: opacity 0.5s ease 1s;
-}
-
-.envelope.open .card-content {
-    opacity: 1;
-}
-
-.intro-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 14px;
-    color: var(--brown);
-    margin-bottom: 20px;
-}
-
-.couple-names {
-    font-family: 'Great Vibes', cursive;
-    font-size: 48px;
-    color: var(--burnt-orange);
-    margin: 20px 0;
-}
-
-.couple-names .bride,
-.couple-names .groom {
-    display: block;
-}
-
-.couple-names .ampersand {
-    font-size: 36px;
-    color: var(--brown);
-}
-
-.invite-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px;
-    color: var(--text-dark);
-    margin-bottom: 30px;
-}
-
-/* Scratch Card */
-.scratch-card {
-    position: relative;
-    width: 200px;
-    height: 100px;
-    margin: 20px auto;
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-#scratchCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-}
-
-.reveal-date {
-    background: linear-gradient(135deg, var(--tan-light), var(--tan));
-    padding: 20px;
-    text-align: center;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.date-label {
-    font-family: 'Playfair Display', serif;
-    font-size: 14px;
-    color: var(--brown);
-}
-
-.wedding-date {
-    font-family: 'Great Vibes', cursive;
-    font-size: 28px;
-    color: var(--burnt-orange);
-    font-weight: bold;
-}
-
-.open-btn {
-    background: var(--burnt-orange);
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
     color: var(--white);
-    border: none;
-    padding: 12px 30px;
-    font-size: 16px;
-    border-radius: 25px;
-    cursor: pointer;
-    margin-top: 20px;
-    font-family: 'Playfair Display', serif;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(204, 85, 0, 0.3);
+    text-align: center;
+    z-index: 3001;
+    animation: bounce 2s infinite;
 }
 
-.open-btn:hover {
-    background: var(--brown);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(204, 85, 0, 0.4);
+.tap-hint p {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.tap-hint i {
+    font-size: 30px;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-20px);
+    }
 }
 
 /* Main Content */
@@ -413,50 +294,41 @@ body {
     margin-bottom: 20px;
 }
 
-/* Venue Section */
-.venue-section {
+/* Map Section */
+.map-section {
     padding: 80px 20px;
-    background: linear-gradient(135deg, var(--green), var(--green-light));
+    background: var(--bg-secondary);
     text-align: center;
 }
 
-.venue-section .section-title {
-    color: var(--white);
-}
-
-.venue-details {
-    max-width: 600px;
+.map-container {
+    max-width: 1000px;
     margin: 0 auto;
-    background: var(--white);
-    padding: 40px;
+}
+
+.map-container iframe {
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
-.venue-info i {
-    font-size: 48px;
-    color: var(--burnt-orange);
-    margin-bottom: 20px;
+.map-actions {
+    margin-top: 30px;
 }
 
-.venue-info h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    color: var(--brown);
-    margin-bottom: 15px;
+.map-btn {
+    display: inline-block;
+    background: var(--green);
+    color: var(--white);
+    padding: 12px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
 }
 
-.venue-info p {
-    font-size: 18px;
-    color: var(--text-dark);
-    margin: 10px 0;
-}
-
-.venue-info i.fa-clock,
-.venue-info i.fa-calendar {
-    font-size: 20px;
-    margin-right: 10px;
-    color: var(--burnt-orange);
+.map-btn:hover {
+    background: var(--brown);
+    transform: translateY(-2px);
 }
 
 /* RSVP Section */
@@ -534,43 +406,6 @@ body {
     background: var(--brown);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(204, 85, 0, 0.4);
-}
-
-/* Map Section */
-.map-section {
-    padding: 80px 20px;
-    background: var(--bg-secondary);
-    text-align: center;
-}
-
-.map-container {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.map-container iframe {
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-}
-
-.map-actions {
-    margin-top: 30px;
-}
-
-.map-btn {
-    display: inline-block;
-    background: var(--green);
-    color: var(--white);
-    padding: 12px 30px;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: 700;
-    transition: all 0.3s ease;
-}
-
-.map-btn:hover {
-    background: var(--brown);
-    transform: translateY(-2px);
 }
 
 /* Gallery Section */
@@ -681,11 +516,6 @@ body {
         font-size: 36px;
     }
 
-    .envelope {
-        width: 300px;
-        height: 220px;
-    }
-
     .countdown-container {
         gap: 15px;
     }
@@ -701,5 +531,13 @@ body {
 
     .section-title {
         font-size: 28px;
+    }
+    
+    .tap-hint p {
+        font-size: 16px;
+    }
+    
+    .tap-hint i {
+        font-size: 24px;
     }
 }

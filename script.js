@@ -2,105 +2,21 @@
 const WEDDING_DATE = new Date('July 25, 2026 09:00:00').getTime();
 
 // DOM Elements
-const envelopeContainer = document.getElementById('envelopeContainer');
-const envelope = document.querySelector('.envelope');
-const openEnvelopeBtn = document.getElementById('openEnvelope');
+const introVideoOverlay = document.getElementById('introVideoOverlay');
+const introVideo = document.getElementById('introVideo');
+const tapHint = document.getElementById('tapHint');
 const mainContent = document.getElementById('mainContent');
 const musicToggle = document.getElementById('musicToggle');
 const themeToggle = document.getElementById('themeToggle');
 const backgroundMusic = document.getElementById('backgroundMusic');
 const rsvpForm = document.getElementById('rsvpForm');
 const mapSection = document.getElementById('mapSection');
-const scratchCard = document.getElementById('scratchCard');
-const scratchCanvas = document.getElementById('scratchCanvas');
 const confettiCanvas = document.getElementById('confettiCanvas');
 
 // Initialize
 let isMusicPlaying = false;
 let isDayTheme = true;
-let isScratched = false;
-
-// Scratch Card Functionality
-function initScratchCard() {
-    const ctx = scratchCanvas.getContext('2d');
-    const rect = scratchCard.getBoundingClientRect();
-    
-    scratchCanvas.width = rect.width;
-    scratchCanvas.height = rect.height;
-    
-    // Fill with silver/gold gradient
-    const gradient = ctx.createLinearGradient(0, 0, scratchCanvas.width, scratchCanvas.height);
-    gradient.addColorStop(0, '#C0C0C0');
-    gradient.addColorStop(0.5, '#FFD700');
-    gradient.addColorStop(1, '#C0C0C0');
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
-    
-    // Add text
-    ctx.fillStyle = '#654321';
-    ctx.font = 'bold 18px Playfair Display';
-    ctx.textAlign = 'center';
-    ctx.fillText('Scratch to reveal', scratchCanvas.width / 2, scratchCanvas.height / 2);
-    
-    let isDrawing = false;
-    
-    function scratch(e) {
-        if (!isDrawing) return;
-        
-        const rect = scratchCanvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches[0].clientY) - rect.top;
-        
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        ctx.arc(x, y, 20, 0, Math.PI * 2);
-        ctx.fill();
-        
-        checkScratchProgress();
-    }
-    
-    function startScratch(e) {
-        isDrawing = true;
-        scratch(e);
-    }
-    
-    function stopScratch() {
-        isDrawing = false;
-    }
-    
-    scratchCanvas.addEventListener('mousedown', startScratch);
-    scratchCanvas.addEventListener('touchstart', startScratch);
-    scratchCanvas.addEventListener('mousemove', scratch);
-    scratchCanvas.addEventListener('touchmove', scratch);
-    scratchCanvas.addEventListener('mouseup', stopScratch);
-    scratchCanvas.addEventListener('touchend', stopScratch);
-    scratchCanvas.addEventListener('mouseleave', stopScratch);
-}
-
-function checkScratchProgress() {
-    const ctx = scratchCanvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height);
-    const pixels = imageData.data;
-    let transparentPixels = 0;
-    
-    for (let i = 3; i < pixels.length; i += 4) {
-        if (pixels[i] === 0) {
-            transparentPixels++;
-        }
-    }
-    
-    const percentage = (transparentPixels / (pixels.length / 4)) * 100;
-    
-    if (percentage > 40 && !isScratched) {
-        isScratched = true;
-        scratchCanvas.style.transition = 'opacity 1s ease';
-        scratchCanvas.style.opacity = '0';
-        setTimeout(() => {
-            scratchCanvas.style.display = 'none';
-        }, 1000);
-    }
-}
+let hasStartedVideo = false;
 
 // Countdown Timer
 function updateCountdown() {
@@ -235,19 +151,30 @@ themeToggle.addEventListener('click', () => {
     isDayTheme = !isDayTheme;
 });
 
-// Envelope Opening
-openEnvelopeBtn.addEventListener('click', () => {
-    envelope.classList.add('open');
+// Intro Video - Tap to Start
+introVideoOverlay.addEventListener('click', () => {
+    if (hasStartedVideo) return;
     
-    // Start confetti after envelope opens
-    setTimeout(() => {
-        startConfetti();
-    }, 1500);
+    hasStartedVideo = true;
+    tapHint.style.display = 'none';
     
-    // Hide envelope and show main content
-    setTimeout(() => {
-        envelopeContainer.classList.add('hidden');
-        mainContent.style.display = 'block';
+    // Unmute and play video
+    introVideo.muted = false;
+    introVideo.play().catch(e => {
+        console.log('Video play failed:', e);
+        // If autoplay fails, just continue
+        introVideo.muted = true;
+        introVideo.play();
+    });
+    
+    // When video ends, reveal the main content
+    introVideo.addEventListener('ended', () => {
+        introVideoOverlay.classList.add('hidden');
+        
+        // Start confetti
+        setTimeout(() => {
+            startConfetti();
+        }, 500);
         
         // Start music automatically when main content appears
         if (!isMusicPlaying) {
@@ -255,7 +182,7 @@ openEnvelopeBtn.addEventListener('click', () => {
             isMusicPlaying = true;
             musicToggle.classList.remove('muted');
         }
-    }, 2000);
+    });
 });
 
 // RSVP Form Submission
@@ -284,16 +211,10 @@ rsvpForm.addEventListener('submit', (e) => {
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Set initial theme
-    document.body.classList.add('day-theme');
-    
-    // Initialize scratch card
-    initScratchCard();
-    
     // Initialize confetti
     initConfetti();
     
-    // Stop confetti initially (will start when envelope opens)
+    // Stop confetti initially (will start when video ends)
     stopConfetti();
     
     // Update countdown immediately and then every second
@@ -337,7 +258,7 @@ const observer = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 // Observe sections for scroll animations
-document.querySelectorAll('.countdown-section, .story-section, .venue-section, .rsvp-section, .gallery-section').forEach(section => {
+document.querySelectorAll('.countdown-section, .story-section, .rsvp-section, .map-section, .gallery-section').forEach(section => {
     section.style.opacity = '0';
     section.style.transform = 'translateY(50px)';
     section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';

@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="day-theme">
     <!-- Music Toggle -->
     <div class="music-toggle" id="musicToggle">
         <i class="fas fa-volume-up"></i>
@@ -22,36 +22,19 @@
         <i class="fas fa-moon"></i>
     </div>
 
-    <!-- Envelope Opening Section -->
-    <div class="envelope-container" id="envelopeContainer">
-        <div class="envelope">
-            <div class="envelope-flap"></div>
-            <div class="envelope-body">
-                <div class="invitation-card">
-                    <div class="card-content">
-                        <p class="intro-text">Together with their families</p>
-                        <h1 class="couple-names">
-                            <span class="bride">Ijeoma</span>
-                            <span class="ampersand">&</span>
-                            <span class="groom">Kenechi</span>
-                        </h1>
-                        <p class="invite-text">Invite you to celebrate their wedding</p>
-                        <div class="scratch-card" id="scratchCard">
-                            <canvas id="scratchCanvas"></canvas>
-                            <div class="reveal-date">
-                                <p class="date-label">Save the Date</p>
-                                <p class="wedding-date">July 25th, 2026</p>
-                            </div>
-                        </div>
-                        <button class="open-btn" id="openEnvelope">Open Invitation</button>
-                    </div>
-                </div>
-            </div>
+    <!-- Intro Video Overlay (First thing user sees) -->
+    <div class="intro-video-overlay" id="introVideoOverlay">
+        <div class="tap-hint" id="tapHint">
+            <p>Tap anywhere to begin</p>
+            <i class="fas fa-hand-pointer"></i>
         </div>
+        <video id="introVideo" muted playsinline>
+            <source src="assets/Tap to Reveal.mp4" type="video/mp4">
+        </video>
     </div>
 
-    <!-- Main Content (Hidden Initially) -->
-    <div class="main-content" id="mainContent" style="display: none;">
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
         <!-- Hero Section with Video -->
         <section class="hero-section">
             <div class="video-background">
@@ -96,20 +79,6 @@
             <div class="story-content">
                 <p>From the moment we met, we knew there was something special between us. Through laughter, tears, and countless memories, our love has grown stronger each day.</p>
                 <p>Now, we're excited to begin our next chapter together and share this joyous occasion with our loved ones.</p>
-            </div>
-        </section>
-
-        <!-- Venue Information -->
-        <section class="venue-section">
-            <h2 class="section-title">Wedding Ceremony</h2>
-            <div class="venue-details">
-                <div class="venue-info">
-                    <i class="fas fa-church"></i>
-                    <h3>Catholic Church of Transfiguration</h3>
-                    <p>VGC, Lagos, Nigeria</p>
-                    <p><i class="far fa-clock"></i> 9:00 AM</p>
-                    <p><i class="far fa-calendar"></i> July 25th, 2026</p>
-                </div>
             </div>
         </section>
 
@@ -183,22 +152,22 @@
             <div class="gallery-container">
                 <div class="gallery-grid">
                     <div class="gallery-item">
-                        <img src="assets/gallery/photo1.jpg" alt="Couple Photo 1" class="gallery-img">
+                        <img src="assets/gallery/432a0cd9-4e8d-4de1-88f7-0b3d749a17e6.jpeg" alt="Couple Photo 1" class="gallery-img">
                     </div>
                     <div class="gallery-item">
-                        <img src="assets/gallery/photo2.jpg" alt="Couple Photo 2" class="gallery-img">
+                        <img src="assets/gallery/e5dadeb7-4fef-4a5b-b2e8-2afb10e46621.jpeg" alt="Couple Photo 2" class="gallery-img">
                     </div>
                     <div class="gallery-item">
-                        <img src="assets/gallery/photo3.jpg" alt="Couple Photo 3" class="gallery-img">
+                        <img src="assets/gallery/432a0cd9-4e8d-4de1-88f7-0b3d749a17e6.jpeg" alt="Couple Photo 3" class="gallery-img">
                     </div>
                     <div class="gallery-item">
-                        <img src="assets/gallery/photo4.jpg" alt="Couple Photo 4" class="gallery-img">
+                        <img src="assets/gallery/e5dadeb7-4fef-4a5b-b2e8-2afb10e46621.jpeg" alt="Couple Photo 4" class="gallery-img">
                     </div>
                     <div class="gallery-item">
-                        <img src="assets/gallery/photo5.jpg" alt="Couple Photo 5" class="gallery-img">
+                        <img src="assets/gallery/432a0cd9-4e8d-4de1-88f7-0b3d749a17e6.jpeg" alt="Couple Photo 5" class="gallery-img">
                     </div>
                     <div class="gallery-item">
-                        <img src="assets/gallery/photo6.jpg" alt="Couple Photo 6" class="gallery-img">
+                        <img src="assets/gallery/e5dadeb7-4fef-4a5b-b2e8-2afb10e46621.jpeg" alt="Couple Photo 6" class="gallery-img">
                     </div>
                 </div>
             </div>
