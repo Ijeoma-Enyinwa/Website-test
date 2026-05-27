@@ -171,6 +171,7 @@ function initScratchCanvas(container, canvasId) {
     canvas.width = rect.width;
     canvas.height = rect.height;
     
+    // Gold shimmer gradient for scratch layer
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, '#FFD700');
     gradient.addColorStop(0.25, '#E8C07A');
@@ -181,11 +182,12 @@ function initScratchCanvas(container, canvasId) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-    for (let i = 0; i < 20; i++) {
+    // Add small gold hearts pattern
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    for (let i = 0; i < 30; i++) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
-        const size = Math.random() * 15 + 5;
+        const size = Math.random() * 12 + 4;
         drawHeart(ctx, x, y, size);
     }
     
@@ -193,6 +195,7 @@ function initScratchCanvas(container, canvasId) {
     let isRevealed = false;
     let totalPixels = canvas.width * canvas.height;
     let clearedPixels = 0;
+    let checkThreshold = 0;
     
     function getMousePos(e) {
         const rect = canvas.getBoundingClientRect();
@@ -207,23 +210,27 @@ function initScratchCanvas(container, canvasId) {
     function scratch(x, y) {
         ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
-        ctx.arc(x, y, 20, 0, Math.PI * 2);
+        ctx.arc(x, y, 25, 0, Math.PI * 2);
         ctx.fill();
         
         if (!isRevealed) {
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            clearedPixels = 0;
-            for (let i = 3; i < pixels.length; i += 4) {
-                if (pixels[i] === 0) clearedPixels++;
-            }
-            
-            const percentCleared = (clearedPixels / totalPixels) * 100;
-            if (percentCleared > 40) {
-                isRevealed = true;
-                containerEl.revealed = true;
-                canvas.style.opacity = '0';
-                checkAllRevealed();
+            checkThreshold++;
+            if (checkThreshold % 5 === 0) {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const pixels = imageData.data;
+                clearedPixels = 0;
+                for (let i = 3; i < pixels.length; i += 4) {
+                    if (pixels[i] === 0) clearedPixels++;
+                }
+                
+                const percentCleared = (clearedPixels / totalPixels) * 100;
+                if (percentCleared > 35) {
+                    isRevealed = true;
+                    containerEl.revealed = true;
+                    canvas.style.opacity = '0';
+                    setTimeout(() => { canvas.style.display = 'none'; }, 1000);
+                    checkAllRevealed();
+                }
             }
         }
     }
