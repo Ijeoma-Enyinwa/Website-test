@@ -16,13 +16,13 @@
     --gold-light:   #E8C07A;
     --gold-pale:    #F5E4C0;
     --silver: #C0C0C0;
-    --burgundy:     #5C2233;
+    --forest-green: #228B22;
     --white: #FFFFFF;
     --text-dark:    #2C2C2C;
     --text-mid:     #6B4535;
     --text-light:   #9E7060;
     --border:       #EEDDD3;
-    --shadow-warm:  0 20px 60px -10px rgba(92,34,51,0.12);
+    --shadow-warm:  0 20px 60px -10px rgba(34,139,34,0.12);
     --shadow-gold:  0 4px 24px rgba(201,150,62,0.18);
 }
 
@@ -361,7 +361,7 @@ body {
 
 /* Footer */
 #footer-section {
-    background: var(--burgundy);
+    background: var(--forest-green);
     padding: 4rem 1.5rem;
     color: white;
     text-align: center;
