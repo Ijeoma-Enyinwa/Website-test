@@ -2,105 +2,31 @@
 const WEDDING_DATE = new Date('July 25, 2026 09:00:00').getTime();
 
 // DOM Elements
-const envelopeContainer = document.getElementById('envelopeContainer');
-const envelope = document.querySelector('.envelope');
-const openEnvelopeBtn = document.getElementById('openEnvelope');
-const mainContent = document.getElementById('mainContent');
-const musicToggle = document.getElementById('musicToggle');
+const entryGate = document.getElementById('entry-gate');
+const entryVideo = document.getElementById('entry-video');
+const playOverlay = document.getElementById('play-overlay');
+const mainContent = document.getElementById('main-content');
+const audioBtn = document.getElementById('audio-btn');
+const iconOn = document.getElementById('icon-on');
+const iconOff = document.getElementById('icon-off');
+const bgAudio = document.getElementById('bg-audio');
 const themeToggle = document.getElementById('themeToggle');
-const backgroundMusic = document.getElementById('backgroundMusic');
-const rsvpForm = document.getElementById('rsvpForm');
-const mapSection = document.getElementById('mapSection');
-const scratchCard = document.getElementById('scratchCard');
-const scratchCanvas = document.getElementById('scratchCanvas');
+const rsvpForm = document.getElementById('rsvp-form');
+const mapSection = document.getElementById('map-section');
 const confettiCanvas = document.getElementById('confettiCanvas');
 
 // Initialize
 let isMusicPlaying = false;
 let isDayTheme = true;
-let isScratched = false;
+let hasStartedVideo = false;
 
-// Scratch Card Functionality
-function initScratchCard() {
-    const ctx = scratchCanvas.getContext('2d');
-    const rect = scratchCard.getBoundingClientRect();
-    
-    scratchCanvas.width = rect.width;
-    scratchCanvas.height = rect.height;
-    
-    // Fill with silver/gold gradient
-    const gradient = ctx.createLinearGradient(0, 0, scratchCanvas.width, scratchCanvas.height);
-    gradient.addColorStop(0, '#C0C0C0');
-    gradient.addColorStop(0.5, '#FFD700');
-    gradient.addColorStop(1, '#C0C0C0');
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
-    
-    // Add text
-    ctx.fillStyle = '#654321';
-    ctx.font = 'bold 18px Playfair Display';
-    ctx.textAlign = 'center';
-    ctx.fillText('Scratch to reveal', scratchCanvas.width / 2, scratchCanvas.height / 2);
-    
-    let isDrawing = false;
-    
-    function scratch(e) {
-        if (!isDrawing) return;
-        
-        const rect = scratchCanvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches[0].clientY) - rect.top;
-        
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        ctx.arc(x, y, 20, 0, Math.PI * 2);
-        ctx.fill();
-        
-        checkScratchProgress();
-    }
-    
-    function startScratch(e) {
-        isDrawing = true;
-        scratch(e);
-    }
-    
-    function stopScratch() {
-        isDrawing = false;
-    }
-    
-    scratchCanvas.addEventListener('mousedown', startScratch);
-    scratchCanvas.addEventListener('touchstart', startScratch);
-    scratchCanvas.addEventListener('mousemove', scratch);
-    scratchCanvas.addEventListener('touchmove', scratch);
-    scratchCanvas.addEventListener('mouseup', stopScratch);
-    scratchCanvas.addEventListener('touchend', stopScratch);
-    scratchCanvas.addEventListener('mouseleave', stopScratch);
-}
-
-function checkScratchProgress() {
-    const ctx = scratchCanvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height);
-    const pixels = imageData.data;
-    let transparentPixels = 0;
-    
-    for (let i = 3; i < pixels.length; i += 4) {
-        if (pixels[i] === 0) {
-            transparentPixels++;
-        }
-    }
-    
-    const percentage = (transparentPixels / (pixels.length / 4)) * 100;
-    
-    if (percentage > 40 && !isScratched) {
-        isScratched = true;
-        scratchCanvas.style.transition = 'opacity 1s ease';
-        scratchCanvas.style.opacity = '0';
-        setTimeout(() => {
-            scratchCanvas.style.display = 'none';
-        }, 1000);
-    }
-}
+// Scratch Canvas Setup
+const scratchCanvases = [];
+const heartContainers = [
+    { id: 'heartContainer1', canvasId: 'scratchCanvas1', revealed: false },
+    { id: 'heartContainer2', canvasId: 'scratchCanvas2', revealed: false },
+    { id: 'heartContainer3', canvasId: 'scratchCanvas3', revealed: false }
+];
 
 // Countdown Timer
 function updateCountdown() {
@@ -108,10 +34,10 @@ function updateCountdown() {
     const distance = WEDDING_DATE - now;
     
     if (distance < 0) {
-        document.getElementById('days').textContent = '00';
-        document.getElementById('hours').textContent = '00';
-        document.getElementById('minutes').textContent = '00';
-        document.getElementById('seconds').textContent = '00';
+        document.getElementById('cd-days').textContent = '00';
+        document.getElementById('cd-hours').textContent = '00';
+        document.getElementById('cd-mins').textContent = '00';
+        document.getElementById('cd-secs').textContent = '00';
         return;
     }
     
@@ -120,10 +46,10 @@ function updateCountdown() {
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
     
-    document.getElementById('days').textContent = String(days).padStart(2, '0');
-    document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-    document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-    document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('cd-mins').textContent = String(minutes).padStart(2, '0');
+    document.getElementById('cd-secs').textContent = String(seconds).padStart(2, '0');
 }
 
 // Confetti Animation
@@ -138,7 +64,7 @@ class ConfettiParticle {
         this.speedX = Math.random() * 2 - 1;
         this.rotation = Math.random() * 360;
         this.rotationSpeed = Math.random() * 10 - 5;
-        this.color = Math.random() > 0.5 ? '#FFD700' : '#C0C0C0'; // Gold or Silver
+        this.color = Math.random() > 0.5 ? '#FFD700' : '#C0C0C0';
         this.shape = Math.random() > 0.5 ? 'circle' : 'rect';
     }
     
@@ -207,16 +133,16 @@ function stopConfetti() {
     confettiCanvas.getContext('2d').clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
 }
 
-// Music Toggle
-musicToggle.addEventListener('click', () => {
+// Audio Toggle
+audioBtn.addEventListener('click', () => {
     if (isMusicPlaying) {
-        backgroundMusic.pause();
-        musicToggle.classList.add('muted');
-        musicToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        bgAudio.pause();
+        iconOn.style.display = 'none';
+        iconOff.style.display = 'block';
     } else {
-        backgroundMusic.play().catch(e => console.log('Audio play failed:', e));
-        musicToggle.classList.remove('muted');
-        musicToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+        bgAudio.play().catch(e => console.log('Audio play failed:', e));
+        iconOn.style.display = 'block';
+        iconOff.style.display = 'none';
     }
     isMusicPlaying = !isMusicPlaying;
 });
@@ -235,75 +161,274 @@ themeToggle.addEventListener('click', () => {
     isDayTheme = !isDayTheme;
 });
 
-// Envelope Opening
-openEnvelopeBtn.addEventListener('click', () => {
-    envelope.classList.add('open');
+// Scratch Canvas Functions
+function initScratchCanvas(container, canvasId) {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+    const containerEl = document.getElementById(container);
     
-    // Start confetti after envelope opens
-    setTimeout(() => {
-        startConfetti();
-    }, 1500);
+    const rect = containerEl.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
     
-    // Hide envelope and show main content
-    setTimeout(() => {
-        envelopeContainer.classList.add('hidden');
-        mainContent.style.display = 'block';
+    // Gold shimmer gradient for scratch layer
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#FFD700');
+    gradient.addColorStop(0.25, '#E8C07A');
+    gradient.addColorStop(0.5, '#F5E4C0');
+    gradient.addColorStop(0.75, '#E8C07A');
+    gradient.addColorStop(1, '#FFD700');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Add small gold hearts pattern
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    for (let i = 0; i < 30; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const size = Math.random() * 12 + 4;
+        drawHeart(ctx, x, y, size);
+    }
+    
+    let isDrawing = false;
+    let isRevealed = false;
+    let totalPixels = canvas.width * canvas.height;
+    let clearedPixels = 0;
+    let checkThreshold = 0;
+    
+    function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
+    }
+    
+    function scratch(x, y) {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 25, 0, Math.PI * 2);
+        ctx.fill();
         
-        // Start music automatically when main content appears
-        if (!isMusicPlaying) {
-            backgroundMusic.play().catch(e => console.log('Audio play failed:', e));
-            isMusicPlaying = true;
-            musicToggle.classList.remove('muted');
+        if (!isRevealed) {
+            checkThreshold++;
+            if (checkThreshold % 5 === 0) {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const pixels = imageData.data;
+                clearedPixels = 0;
+                for (let i = 3; i < pixels.length; i += 4) {
+                    if (pixels[i] === 0) clearedPixels++;
+                }
+                
+                const percentCleared = (clearedPixels / totalPixels) * 100;
+                if (percentCleared > 35) {
+                    isRevealed = true;
+                    containerEl.revealed = true;
+                    canvas.style.opacity = '0';
+                    setTimeout(() => { canvas.style.display = 'none'; }, 1000);
+                    checkAllRevealed();
+                }
+            }
         }
-    }, 2000);
+    }
+    
+    function drawHeart(ctx, x, y, size) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.bezierCurveTo(x - size/2, y - size/2, x - size, y + size/3, x, y + size);
+        ctx.bezierCurveTo(x + size, y + size/3, x + size/2, y - size/2, x, y);
+        ctx.fill();
+    }
+    
+    canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        const pos = getMousePos(e);
+        scratch(pos.x, pos.y);
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isDrawing) return;
+        const pos = getMousePos(e);
+        scratch(pos.x, pos.y);
+    });
+    
+    canvas.addEventListener('mouseup', () => { isDrawing = false; });
+    canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+    
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        isDrawing = true;
+        const pos = getMousePos(e);
+        scratch(pos.x, pos.y);
+    });
+    
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!isDrawing) return;
+        const pos = getMousePos(e);
+        scratch(pos.x, pos.y);
+    });
+    
+    canvas.addEventListener('touchend', () => { isDrawing = false; });
+    
+    return { canvas, ctx, isRevealed: () => isRevealed };
+}
+
+function checkAllRevealed() {
+    const allRevealed = heartContainers.every(hc => {
+        const el = document.getElementById(hc.id);
+        return el && el.revealed;
+    });
+    
+    if (allRevealed) {
+        const heartsRow = document.getElementById('heartsRow');
+        if (heartsRow) {
+            heartsRow.classList.add('unlocked');
+        }
+        
+        setTimeout(() => {
+            const msg = document.getElementById('surpriseMessage');
+            if (msg) msg.classList.add('revealed');
+        }, 300);
+        
+        setTimeout(() => {
+            const cd = document.getElementById('countdown-container');
+            if (cd) cd.classList.add('revealed');
+        }, 800);
+        
+        setTimeout(() => {
+            startConfetti();
+            fireConfettiBurst();
+        }, 500);
+    }
+}
+
+function fireConfettiBurst() {
+    if (typeof confetti !== 'undefined') {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#FFD700', '#E8C07A', '#CC5500', '#FFFFFF']
+        });
+    }
+}
+
+// Entry Gate - Tap to Start
+entryGate.addEventListener('click', () => {
+    if (hasStartedVideo) return;
+    
+    hasStartedVideo = true;
+    playOverlay.classList.add('hidden');
+    
+    entryVideo.muted = false;
+    entryVideo.play().catch(e => {
+        console.log('Video play failed:', e);
+        entryVideo.muted = true;
+        entryVideo.play();
+    });
+    
+    entryVideo.addEventListener('ended', () => {
+        entryGate.classList.add('fade-out');
+        mainContent.classList.add('visible');
+        
+        setTimeout(() => {
+            initScratchCanvases();
+        }, 500);
+        
+        if (!isMusicPlaying) {
+            bgAudio.play().catch(e => console.log('Audio play failed:', e));
+            isMusicPlaying = true;
+            iconOn.style.display = 'block';
+            iconOff.style.display = 'none';
+        }
+    });
 });
+
+function initScratchCanvases() {
+    heartContainers.forEach(hc => {
+        const scratchObj = initScratchCanvas(hc.id, hc.canvasId);
+        scratchCanvases.push(scratchObj);
+    });
+}
 
 // RSVP Form Submission
 rsvpForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
-    // Get form data
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    const btnSpinner = document.getElementById('btn-spinner');
+    
+    submitBtn.disabled = true;
+    btnText.textContent = 'Sending...';
+    btnSpinner.style.display = 'inline-block';
+    
     const formData = new FormData(rsvpForm);
     const rsvpData = Object.fromEntries(formData);
     
-    // Show success message
-    alert(`Thank you ${rsvpData.fullName}! Your RSVP has been submitted successfully. We look forward to celebrating with you!`);
-    
-    // Reset form
-    rsvpForm.reset();
-    
-    // Reveal map section
-    mapSection.style.display = 'block';
-    
-    // Scroll to map section smoothly
-    mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
-    // Log data (in production, send to server)
-    console.log('RSVP Data:', rsvpData);
+    setTimeout(() => {
+        alert(`Thank you ${rsvpData.name || 'guest'}! Your RSVP has been submitted successfully. We look forward to celebrating with you!`);
+        
+        rsvpForm.reset();
+        
+        submitBtn.disabled = false;
+        btnText.textContent = 'Send Love';
+        btnSpinner.style.display = 'none';
+        
+        mapSection.style.display = 'block';
+        
+        mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        console.log('RSVP Data:', rsvpData);
+        
+        fireConfettiBurst();
+    }, 1500);
 });
+
+// Intersection Observer for reveal animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+        }
+    });
+}, observerOptions);
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Set initial theme
-    document.body.classList.add('day-theme');
-    
-    // Initialize scratch card
-    initScratchCard();
-    
-    // Initialize confetti
     initConfetti();
-    
-    // Stop confetti initially (will start when envelope opens)
     stopConfetti();
     
-    // Update countdown immediately and then every second
     updateCountdown();
     setInterval(updateCountdown, 1000);
     
-    // Handle window resize for confetti
     window.addEventListener('resize', () => {
         confettiCanvas.width = window.innerWidth;
         confettiCanvas.height = window.innerHeight;
+        
+        scratchCanvases.length = 0;
+        heartContainers.forEach(hc => {
+            const canvas = document.getElementById(hc.canvasId);
+            if (canvas) {
+                const containerEl = document.getElementById(hc.id);
+                const rect = containerEl.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+            }
+        });
+    });
+    
+    document.querySelectorAll('.reveal').forEach(el => {
+        observer.observe(el);
     });
 });
 
@@ -321,25 +446,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Add scroll animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+// Radio pill selection
+document.querySelectorAll('.radio-pill').forEach(pill => {
+    pill.addEventListener('click', function() {
+        const radio = this.querySelector('input[type="radio"]');
+        if (radio) {
+            radio.checked = true;
+            this.parentElement.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('selected'));
+            this.classList.add('selected');
         }
     });
-}, observerOptions);
-
-// Observe sections for scroll animations
-document.querySelectorAll('.countdown-section, .story-section, .venue-section, .rsvp-section, .gallery-section').forEach(section => {
-    section.style.opacity = '0';
-    section.style.transform = 'translateY(50px)';
-    section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-    observer.observe(section);
 });

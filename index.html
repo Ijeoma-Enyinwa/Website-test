@@ -2,18 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ijeoma & Kenechi - Wedding Invitation</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Tenor+Sans&family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
-<body>
+<body class="day-theme">
     <!-- Music Toggle -->
-    <div class="music-toggle" id="musicToggle">
-        <i class="fas fa-volume-up"></i>
-    </div>
-    <audio id="backgroundMusic" loop>
+    <button id="audio-btn" title="Toggle music" aria-label="Toggle background music">
+        <svg id="icon-on" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+        </svg>
+        <svg id="icon-off" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="display:none">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/>
+        </svg>
+    </button>
+    <audio id="bg-audio" loop preload="none">
         <source src="assets/music.mp3" type="audio/mp3">
     </audio>
 
@@ -22,141 +28,235 @@
         <i class="fas fa-moon"></i>
     </div>
 
-    <!-- Envelope Opening Section -->
-    <div class="envelope-container" id="envelopeContainer">
-        <div class="envelope">
-            <div class="envelope-flap"></div>
-            <div class="envelope-body">
-                <div class="invitation-card">
-                    <div class="card-content">
-                        <p class="intro-text">Together with their families</p>
-                        <h1 class="couple-names">
-                            <span class="bride">Ijeoma</span>
-                            <span class="ampersand">&</span>
-                            <span class="groom">Kenechi</span>
-                        </h1>
-                        <p class="invite-text">Invite you to celebrate their wedding</p>
-                        <div class="scratch-card" id="scratchCard">
-                            <canvas id="scratchCanvas"></canvas>
-                            <div class="reveal-date">
-                                <p class="date-label">Save the Date</p>
-                                <p class="wedding-date">July 25th, 2026</p>
-                            </div>
-                        </div>
-                        <button class="open-btn" id="openEnvelope">Open Invitation</button>
+    <!-- Intro Video Overlay (First thing user sees) -->
+    <div id="entry-gate">
+        <video id="entry-video" playsinline preload="metadata" muted>
+            <source src="assets/Tap to Reveal.mp4" type="video/mp4">
+        </video>
+        <div id="play-overlay"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <!-- Hero Section with Image -->
+        <section id="hero">
+            <div class="hero-background">
+                <img src="assets/hero image.png" alt="Ijeoma & Kenechi" class="hero-img">
+            </div>
+            <div class="hero-frame"><span></span></div>
+            <div class="hero-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <p class="blessings-text">
+                    With the blessings of the Almighty & our respected elders,<br>
+                    we joyfully request your gracious presence on the wedding celebration of
+                </p>
+                <div class="couple-block">
+                    <span class="couple-name shimmer-gold">Ijeoma</span>
+                </div>
+                <div class="ampersand-wrap">
+                    <div class="ampersand-line"></div>
+                    <span class="ampersand">&</span>
+                    <div class="ampersand-line"></div>
+                </div>
+                <div class="couple-block">
+                    <span class="couple-name shimmer-gold">Kenechi</span>
+                </div>
+            </div>
+            <div class="scroll-cue">
+                <p>Scroll</p>
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+        </section>
+
+        <!-- Scratch to Reveal Section -->
+        <section id="scratch-reveal-section">
+            <div class="text-center reveal">
+                <span class="section-label">Save The Date</span>
+                <h2 class="section-heading" style="color:var(--terracotta)">Reveal Our<br>Big Day</h2>
+                <p class="reveal reveal-delay-2 mt-4" style="font-style:italic;color:var(--text-light);font-size:1.1rem;margin-bottom:1rem;">Scratch the hearts to reveal</p>
+            </div>
+            <div class="hearts-row reveal reveal-delay-2" id="heartsRow">
+                <div class="heart-container" id="heartContainer1">
+                    <div class="hidden-content">
+                        <span class="label">DAY</span>
+                        <span class="value">25</span>
+                    </div>
+                    <canvas id="scratchCanvas1" class="scratch-canvas"></canvas>
+                </div>
+                <div class="heart-container" id="heartContainer2">
+                    <div class="hidden-content">
+                        <span class="label">MONTH</span>
+                        <span class="value">July</span>
+                    </div>
+                    <canvas id="scratchCanvas2" class="scratch-canvas"></canvas>
+                </div>
+                <div class="heart-container" id="heartContainer3">
+                    <div class="hidden-content">
+                        <span class="label">YEAR</span>
+                        <span class="value">2026</span>
+                    </div>
+                    <canvas id="scratchCanvas3" class="scratch-canvas"></canvas>
+                </div>
+            </div>
+            <div class="text-center">
+                <div id="surpriseMessage" class="surprise-message">The start of a beautiful journey...</div>
+                <div id="countdown-container" class="countdown-container">
+                    <div class="cd-item"><span id="cd-days">00</span><small>Days</small></div>
+                    <div class="cd-item"><span id="cd-hours">00</span><small>Hrs</small></div>
+                    <div class="cd-item"><span id="cd-mins">00</span><small>Mins</small></div>
+                    <div class="cd-item"><span id="cd-secs">00</span><small>Secs</small></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Gallery Section -->
+        <section id="memories-section">
+            <div class="text-center reveal">
+                <span class="section-label">A Glimpse of Us</span>
+                <h2 class="section-heading" style="color:var(--terracotta)">Our Beautiful<br>Moments</h2>
+                <div class="ornament mt-4">
+                    <div class="ornament-line rev"></div>
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24" style="color:var(--gold)"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                    <div class="ornament-line"></div>
+                </div>
+            </div>
+            <div class="gallery-container reveal reveal-delay-2">
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <img src="assets/gallery/432a0cd9-4e8d-4de1-88f7-0b3d749a17e6.jpeg" alt="Couple Photo 1" class="gallery-img">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/gallery/e5dadeb7-4fef-4a5b-b2e8-2afb10e46621.jpeg" alt="Couple Photo 2" class="gallery-img">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/gallery/432a0cd9-4e8d-4de1-88f7-0b3d749a17e6.jpeg" alt="Couple Photo 3" class="gallery-img">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/gallery/e5dadeb7-4fef-4a5b-b2e8-2afb10e46621.jpeg" alt="Couple Photo 4" class="gallery-img">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/gallery/432a0cd9-4e8d-4de1-88f7-0b3d749a17e6.jpeg" alt="Couple Photo 5" class="gallery-img">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/gallery/e5dadeb7-4fef-4a5b-b2e8-2afb10e46621.jpeg" alt="Couple Photo 6" class="gallery-img">
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Main Content (Hidden Initially) -->
-    <div class="main-content" id="mainContent" style="display: none;">
-        <!-- Hero Section with Video -->
-        <section class="hero-section">
-            <div class="video-background">
-                <video autoplay muted loop playsinline id="heroVideo">
-                    <source src="assets/intro-video.mp4" type="video/mp4">
-                </video>
-                <div class="video-overlay"></div>
-            </div>
-            <div class="hero-content">
-                <h1 class="hero-names">Ijeoma & Kenechi</h1>
-                <p class="hero-date">July 25th, 2026</p>
-                <p class="hero-location">Lagos, Nigeria</p>
-            </div>
         </section>
 
-        <!-- Countdown Section -->
-        <section class="countdown-section">
-            <h2 class="section-title">Countdown to Our Special Day</h2>
-            <div class="countdown-container">
-                <div class="countdown-item">
-                    <span class="countdown-number" id="days">00</span>
-                    <span class="countdown-label">Days</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="hours">00</span>
-                    <span class="countdown-label">Hours</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="minutes">00</span>
-                    <span class="countdown-label">Minutes</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="seconds">00</span>
-                    <span class="countdown-label">Seconds</span>
+        <!-- Wedding Event Section -->
+        <section id="events-section">
+            <div class="text-center reveal" style="margin-bottom:3rem;">
+                <span class="section-label">The Celebration Unfolds</span>
+                <h2 class="section-heading" style="color:var(--terracotta)">Sacred<br>Ceremony</h2>
+                <div class="ornament mt-4">
+                    <div class="ornament-line rev"></div>
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24" style="color:var(--gold)"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                    <div class="ornament-line"></div>
                 </div>
             </div>
-        </section>
-
-        <!-- Story Section -->
-        <section class="story-section">
-            <h2 class="section-title">Our Love Story</h2>
-            <div class="story-content">
-                <p>From the moment we met, we knew there was something special between us. Through laughter, tears, and countless memories, our love has grown stronger each day.</p>
-                <p>Now, we're excited to begin our next chapter together and share this joyous occasion with our loved ones.</p>
-            </div>
-        </section>
-
-        <!-- Venue Information -->
-        <section class="venue-section">
-            <h2 class="section-title">Wedding Ceremony</h2>
-            <div class="venue-details">
-                <div class="venue-info">
-                    <i class="fas fa-church"></i>
-                    <h3>Catholic Church of Transfiguration</h3>
-                    <p>VGC, Lagos, Nigeria</p>
-                    <p><i class="far fa-clock"></i> 9:00 AM</p>
-                    <p><i class="far fa-calendar"></i> July 25th, 2026</p>
+            <div class="event-block reveal">
+                <div class="text-center mb-4">
+                    <p class="event-subtitle">July 25th, 2026 - 9:00 AM</p>
+                    <h3 class="event-title">Wedding Ceremony</h3>
+                </div>
+                <div class="event-venue-card reveal reveal-delay-1">
+                    <span class="event-venue-name">Catholic Church of Transfiguration VGC, Lagos</span>
                 </div>
             </div>
         </section>
 
         <!-- RSVP Form Section -->
-        <section class="rsvp-section" id="rsvpSection">
-            <h2 class="section-title">RSVP</h2>
-            <p class="rsvp-subtitle">Please fill out the form below to confirm your attendance</p>
-            <form class="rsvp-form" id="rsvpForm">
-                <div class="form-group">
-                    <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName" name="fullName" required>
+        <section id="rsvp-section">
+            <div class="text-center reveal">
+                <span class="section-label">Join the Celebration</span>
+                <h2 class="section-heading" style="color:var(--terracotta)">Celebrate<br>With Us</h2>
+                <p class="reveal reveal-delay-2 mt-4" style="font-style:italic;color:var(--text-light);font-size:1.1rem;margin-bottom:2.5rem;">A few fun questions before the big day!</p>
+            </div>
+            <form id="rsvp-form" class="rsvp-form">
+                <div class="form-card reveal">
+                    <p class="form-card-title">Guest Details</p>
+                    <div class="field-group">
+                        <label class="field-label" for="f-name">Your Name</label>
+                        <input class="field-input" type="text" id="f-name" name="name" required placeholder="Full name" autocomplete="name">
+                    </div>
+                    <div class="field-group" style="margin-bottom:0;">
+                        <label class="field-label" for="f-phone">Phone Number</label>
+                        <input class="field-input" type="tel" id="f-phone" name="phone" required placeholder="+234 000 000 0000" autocomplete="tel">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required>
+                <div class="form-card reveal reveal-delay-1">
+                    <p class="form-card-title">Will You Attend?</p>
+                    <div class="radio-pill-row">
+                        <label class="radio-pill">
+                            <input type="radio" name="attendance" value="yes">
+                            <span>Yes, I'll be there!</span>
+                        </label>
+                        <label class="radio-pill">
+                            <input type="radio" name="attendance" value="no">
+                            <span>Sorry, can't make it</span>
+                        </label>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" required>
+                <div class="form-card reveal reveal-delay-1" id="extra-cards">
+                    <p class="form-card-title">Make a Guess</p>
+                    <p class="form-card-subtitle">Who will get emotional first?</p>
+                    <div class="circle-select">
+                        <label class="circle-opt">
+                            <input type="radio" name="guess_emotional_first" value="Ijeoma">
+                            <div class="circle-face">I</div>
+                            <span class="circle-opt-label">Ijeoma</span>
+                        </label>
+                        <label class="circle-opt">
+                            <input type="radio" name="guess_emotional_first" value="Kenechi">
+                            <div class="circle-face">K</div>
+                            <span class="circle-opt-label">Kenechi</span>
+                        </label>
+                        <label class="circle-opt">
+                            <input type="radio" name="guess_emotional_first" value="Both">
+                            <div class="circle-face">B</div>
+                            <span class="circle-opt-label">Both</span>
+                        </label>
+                    </div>
+                    <p style="text-align:center;font-size:0.85rem;color:var(--text-light);font-style:italic;margin-top:1rem;">Reveal after the wedding 😉</p>
                 </div>
-                <div class="form-group">
-                    <label for="guests">Number of Guests</label>
-                    <select id="guests" name="guests">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5+">5+</option>
-                    </select>
+                <div class="form-card reveal reveal-delay-2" id="mood-card">
+                    <p class="form-card-title">Your Wedding Mood</p>
+                    <p class="form-card-subtitle">I'm coming for...</p>
+                    <div class="mood-grid">
+                        <label class="mood-opt"><input type="radio" name="wedding_mood" value="The Food"> The Food 🍛</label>
+                        <label class="mood-opt"><input type="radio" name="wedding_mood" value="The Dance Floor"> Dance Floor 💃</label>
+                        <label class="mood-opt"><input type="radio" name="wedding_mood" value="The Love"> The Love ❤️</label>
+                        <label class="mood-opt"><input type="radio" name="wedding_mood" value="All of It"> All of It ✨</label>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="attendance">Will you attend?</label>
-                    <select id="attendance" name="attendance">
-                        <option value="yes">Yes, I'll be there!</option>
-                        <option value="no">Sorry, can't make it</option>
-                    </select>
+                <div class="form-card reveal reveal-delay-2">
+                    <p class="form-card-title">Leave Us a Note</p>
+                    <p class="form-card-subtitle">Share a wish or memory.</p>
+                    <textarea class="text-area" name="message" rows="3" placeholder="Write something from the heart..."></textarea>
+                    <p style="font-size:0.8rem;color:var(--text-light);font-style:italic;margin-top:0.6rem;">🔥 This becomes a digital memory book.</p>
                 </div>
-                <div class="form-group">
-                    <label for="message">Message to the Couple</label>
-                    <textarea id="message" name="message" rows="4"></textarea>
+                <div class="form-card reveal reveal-delay-3">
+                    <p class="form-card-title">Words for Forever</p>
+                    <p class="form-card-subtitle">Advice for married life.</p>
+                    <textarea class="text-area" name="advice_for_forever" rows="3" placeholder="One piece of advice..."></textarea>
                 </div>
-                <button type="submit" class="submit-btn">Submit RSVP</button>
+                <div class="reveal reveal-delay-3" style="margin-top:2rem;">
+                    <button type="submit" class="submit-btn" id="submit-btn">
+                        <span id="btn-text">Send Love</span>
+                        <svg id="btn-spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;vertical-align:middle;margin-left:8px;" class="spin">
+                            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0110 10" stroke-opacity="0.75"/>
+                        </svg>
+                    </button>
+                </div>
             </form>
         </section>
 
         <!-- Map Section (Revealed after form submission) -->
-        <section class="map-section" id="mapSection" style="display: none;">
+        <section id="map-section" style="display: none;">
             <h2 class="section-title">Venue Location</h2>
             <div class="map-container">
                 <iframe 
@@ -177,38 +277,12 @@
             </div>
         </section>
 
-        <!-- Photo Gallery Section -->
-        <section class="gallery-section">
-            <h2 class="section-title">Our Moments</h2>
-            <div class="gallery-container">
-                <div class="gallery-grid">
-                    <div class="gallery-item">
-                        <img src="assets/gallery/photo1.jpg" alt="Couple Photo 1" class="gallery-img">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/photo2.jpg" alt="Couple Photo 2" class="gallery-img">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/photo3.jpg" alt="Couple Photo 3" class="gallery-img">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/photo4.jpg" alt="Couple Photo 4" class="gallery-img">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/photo5.jpg" alt="Couple Photo 5" class="gallery-img">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/photo6.jpg" alt="Couple Photo 6" class="gallery-img">
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Footer -->
-        <footer class="footer">
-            <p class="footer-text">Thank you for being part of our journey</p>
-            <p class="footer-names">Ijeoma & Kenechi</p>
-            <p class="footer-date">July 25th, 2026</p>
+        <footer id="footer-section">
+            <div class="reveal" style="width: 100%;">
+                <span class="footer-names">Ijeoma<br>&<br>Kenechi</span>
+                <p class="footer-msg">Thank you for being part of our journey</p>
+            </div>
         </footer>
     </div>
 
